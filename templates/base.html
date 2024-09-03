@@ -8,18 +8,76 @@
     </head>
     <body>
         <div class="container">
-            {% block content %}
-            Hello there
-            <h1>This is the test page</h1>
-            {% endblock %}
+            <div class="header text-center">
+                <h1><span class="accent">LIBRO</span> PROJECT</h1>
+            </div>
+            <div class="content">
+                {% block content %}
+                Hello there
+                <h1>This is the test page</h1>
+                {% endblock %}
+            </div>
+            <div class="footer">
+                <hr>
+                <p><span class="accent">LIBRO</span> PROJECT (c) 2024 | <a id="theme-toggle" class="theme-toggle">Light theme</a></p>
+            </div>
         </div>
-
         <style>
             @import url('https://fonts.cdnfonts.com/css/jetbrains-mono-2');
-            .container{
+            body{
                 font-family: "JetBrains Mono", monospace;
+            }
+            .dark-mode{
+                background-color: black;
+                color: whitesmoke;
+            }
+            /* .light-mode{
+                background-color: white;
+                color: black;
+            } */
+            .container{
                 padding-top: 5%;
             }
+            .header{
+                padding-top: 1%;
+            }
+            .accent{
+                color: red;
+            }
+            a{
+                text-decoration: none;
+                cursor: pointer;
+                color: grey;
+            }
         </style>
+        <script>
+            // Check if there's a saved theme in localStorage
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const bodyElement = document.body;
+            const themeToggleLink = document.getElementById('theme-toggle');
+
+            // Apply saved theme on load
+            if (savedTheme === 'dark') {
+                bodyElement.classList.add('dark-mode');
+                themeToggleLink.textContent = 'Dark Theme';
+            } else {
+                themeToggleLink.textContent = 'Light Theme';
+            }
+
+            // Toggle dark mode and save preference
+            themeToggleLink.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default link behavior
+
+                if (bodyElement.classList.contains('dark-mode')) {
+                    bodyElement.classList.remove('dark-mode');
+                    themeToggleLink.textContent = 'Light Theme';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    bodyElement.classList.add('dark-mode');
+                    themeToggleLink.textContent = 'Dark Theme';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        </script>
     </body>
 </html>
