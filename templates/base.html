@@ -8,6 +8,13 @@
     </head>
     <body>
         <div class="container">
+            <div class="text-center">
+                {% block menu %}
+                <a href="/logout">Logout</a>
+                <a href="/logout">Account</a>
+                <a href="/logout" class="selected">Main</a>
+                {% endblock %}
+            </div>
             <div class="header text-center">
                 <h1><span class="accent">LIBRO</span> PROJECT</h1>
             </div>
@@ -49,7 +56,7 @@
                 color: black;
             } */
             .container{
-                padding-top: 5%;
+                padding-top: 3%;
             }
             .header{
                 padding-top: 1%;
@@ -61,6 +68,9 @@
                 text-decoration: none;
                 cursor: pointer;
                 color: grey;
+            }
+            a.selected{
+                text-decoration: underline;
             }
         </style>
         <script>
