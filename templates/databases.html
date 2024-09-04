@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %} Stored databases {% endblock %}
+{% block menu %}
+<a href="/">Main</a>
+<a href="/databases" class="selected">Databases</a>
+<a href="/account">Account</a>
+<a href="/logout">Logout</a>
+{% endblock %}
+{% block content %}
+    <h1>Index</h1>
+    <p>This is the list of all uploaded databases. You can edit, download, rename or delete them.</p>
+    <p>
+        <form enctype="multipart/form-data" method="post">
+            <label for="file">Upload a database here:</label>
+            <input type="file" class="form-control-file" id="file" name="file">
+            <button type="submit">Upload</button> <!-- class="btn btn-primary" -->
+        </form>
+    </p>
+
+    {% if databases %}
+        <br><h3>List of uploaded databases</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Upload date</th>
+            </tr>
+            {% for database in databases %}
+                <tr>
+                    <td>{{ database.id }}</td>
+                    <td>{{ database.name }}</td>
+                    <td>{{ database.uploadDate }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <!-- <table>
+        <tr>
+            <th>Name</th>
+            <th>Entries</th>
+        </tr>
+        <tr>
+            <td>123</td>
+            <td>million</td>
+            <td>Edit</td>
+        </tr>
+    </table> -->
+{% endblock %}

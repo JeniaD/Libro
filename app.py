@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from models import db, User
+from models import db, User, Database
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 app.config.from_object("config")
@@ -36,7 +38,36 @@ def login():
             flash("Wrong credentials", "danger")
 
     return render_template("login.html")
-    
+
+@app.route("/databases", methods=["GET", "POST"])
+def databases():
+    if not session.get("username"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        if "file" not in request.files:
+            flash("No file detected", "danger")
+            return render_template("databases.html") # return redirect(request.url)
+        file = request.files["file"]
+        if not file.filename:
+            flash("No file detected", "danger")
+            return render_template("databases.html")
+        
+        if file:
+            filename = secure_filename(file.filename)
+
+            newDB = Database(name=filename)
+            db.session.add(newDB)
+            db.session.commit()
+
+            filepath = os.path.join(app.config["UPLOAD_FOLDER"], str(newDB.id))
+            file.save(filepath)
+
+            flash("Upload successful", "success")
+            return redirect(url_for("databases"))
+
+    databases = Database.query.all()
+    return render_template("databases.html", databases=databases)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
