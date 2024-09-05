@@ -55,8 +55,10 @@ def databases():
         
         if file:
             filename = secure_filename(file.filename)
+            fileSize = len(file.read())
+            file.seek(0)
 
-            newDB = Database(name=filename)
+            newDB = Database(name=filename, fileSize=fileSize)
             db.session.add(newDB)
             db.session.commit()
 

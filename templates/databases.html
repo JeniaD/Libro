@@ -20,20 +20,36 @@
 
     {% if databases %}
         <br><h3>List of uploaded databases</h3>
+        <small>Total: {{ databases|length }}</small>
         <table>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Size</th>
                 <th>Upload date</th>
             </tr>
             {% for database in databases %}
-                <tr>
+                <tr data-href="/databases/{{ database.id }}">
                     <td>{{ database.id }}</td>
                     <td>{{ database.name }}</td>
-                    <td>{{ database.uploadDate }}</td>
+                    <td>{{ database.fileSize|filesizeformat }}</td>
+                    <td>{{ database.uploadDate.strftime("%H:%M %d.%m.%Y") }}</td>
                 </tr>
             {% endfor %}
         </table>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const rows = document.querySelectorAll("table tr[data-href]");
+                
+                rows.forEach(row => {
+                    row.style.cursor = "pointer"; // Changes cursor to pointer to indicate it's clickable
+                    row.addEventListener("click", function() {
+                        window.location.href = this.dataset.href; // Redirects to the URL in data-href attribute
+                    });
+                });
+            });
+        </script>
     {% endif %}
     <!-- <table>
         <tr>
