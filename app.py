@@ -91,6 +91,27 @@ def viewDB(id):
     
     return render_template("database.html", database=database)
 
+@app.route("/databases/delete/<int:id>")
+def removeDB(id):
+    if not session.get("username"):
+        return redirect(url_for("login"))
+    
+    database = Database.query.filter_by(id=id).first()
+
+    if database:
+        try:
+            path = os.path.join("static/uploads", str(database.id))
+            if os.path.exists(path): os.remove(path)
+
+            db.session.delete(database)
+            db.session.commit()
+        except Exception as e:
+            flash("Unknown error occurred: " + str(e), "danger")
+            return redirect(url_for("databases"))
+
+    flash("Removal successful", "success")
+    return redirect(url_for("databases"))
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if not session.get("username"):
@@ -113,7 +134,7 @@ def search():
                                 "line": i + 1,
                                 "filename": database.name
                             })
-            return render_template("search.html", query=query, results=results, speed=time.time()-start)
+            return render_template("search.html", query=query, results=results, speed=time.time()-start, dbnum=len(Database.query.all()))
     
     return render_template("search.html")
 
