@@ -9,6 +9,16 @@ app = Flask(__name__)
 app.config.from_object("config")
 db.init_app(app)
 
+def formatNumber(value):
+    if value < 1_000:
+        return str(value)
+    elif value < 1_000_000:
+        return f"{value / 1_000:.1f}K"
+    else:
+        return f"{value / 1_000_000:.1f}M"
+
+app.jinja_env.filters["formatNumber"] = formatNumber
+
 @app.route("/debug")
 def debug():
     return render_template("base.html")

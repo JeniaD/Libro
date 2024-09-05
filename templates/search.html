@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Index {% endblock %}
+{% block title %} Search {% endblock %}
 {% block menu %}
 <a href="/" class="selected">Main</a>
 <a href="/databases">Databases</a>
@@ -8,18 +8,19 @@
 <a href="/logout">Logout</a>
 {% endblock %}
 {% block content %}
-<h1>Search</h1>
+<h1>Database search</h1>
 
 <form method="POST">
     <label for="query">Search Query</label>
-    <input type="text" class="form-control" id="query" name="query" value="{{ query }}">
+    <input type="text" id="query" name="query" value="{{ query }}"> <!-- class="form-control" -->
 
-    <button type="submit">Search</button>
+    <button type="submit btn">Search</button>
 </form>
+<br>
 
 {% if query %}
     <h3>Search for <span class="accent">{{ query }}</span></h3>
-    <small>Completed in {{ speed }} seconds through {{ dbnum }} datasets ({{ entries }} entries)</small>
+    <small>Completed in {{ speed }} seconds through {{ dbnum }} datasets ({{ entries|formatNumber }} entries)</small>
     {% endif %}
 
     {% if results %}
