@@ -3,6 +3,7 @@ from models import db, User, Database
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import time
 
 app = Flask(__name__)
 app.config.from_object("config")
@@ -89,6 +90,32 @@ def viewDB(id):
             return redirect(request.url)
     
     return render_template("database.html", database=database)
+
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if not session.get("username"):
+        return redirect(url_for("login"))
+    
+    if request.method == "POST":
+        query = request.form.get("query").strip()
+        if query:
+            start = time.time()
+            results = []
+            databases = Database.query.all()
+            for database in databases:
+                path = os.path.join("static/uploads", str(database.id))
+                with open(path, 'r') as db:
+                    lines = db.readlines()
+                    for i, line in enumerate(lines):
+                        if query.lower() in line.lower():
+                            results.append({
+                                "text": line.strip(),
+                                "line": i + 1,
+                                "filename": database.name
+                            })
+            return render_template("search.html", query=query, results=results, speed=time.time()-start)
+    
+    return render_template("search.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

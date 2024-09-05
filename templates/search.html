@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %} Index {% endblock %}
+{% block menu %}
+<a href="/" class="selected">Main</a>
+<a href="/databases">Databases</a>
+<a href="/account">Account</a>
+<a href="/logout">Logout</a>
+{% endblock %}
+{% block content %}
+<h1>Search</h1>
+
+<form method="POST">
+    <label for="query">Search Query</label>
+    <input type="text" class="form-control" id="query" name="query" value="{{ query }}">
+
+    <button type="submit">Search</button>
+</form>
+
+{% if query %}
+    <h3>Search for {{ query }}</h3>
+    <small>Completed in {{ speed }} through {{ dbnum }} datasets</small>
+    {% endif %}
+
+    {% if results %}
+        <ul>
+            {% for result in results %}
+                <li>{{ result.text }} - {{ result.filename }}:{{ result.line }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
