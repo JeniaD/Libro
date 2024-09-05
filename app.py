@@ -71,5 +71,24 @@ def databases():
     databases = Database.query.all()
     return render_template("databases.html", databases=databases)
 
+@app.route("/databases/<int:id>", methods=["GET", "POST"])
+def viewDB(id):
+    if not session.get("username"):
+        return redirect(url_for("login"))
+    
+    database = Database.query.filter_by(id=id).first()
+    if not database:
+        # flash("No database was found with that ID", "danger")
+        return redirect(url_for("databases"))
+    
+    if request.method == "POST":
+        name = request.form["name"]
+        if name and len(name) > 1 and len(name) < 100:
+            database.name = name
+            db.session.commit()
+            return redirect(request.url)
+    
+    return render_template("database.html", database=database)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
