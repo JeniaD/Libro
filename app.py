@@ -122,11 +122,13 @@ def search():
         if query:
             start = time.time()
             results = []
+            entries = 0 # Change to in-database addition
             databases = Database.query.all()
             for database in databases:
                 path = os.path.join("static/uploads", str(database.id))
                 with open(path, 'r') as db:
                     lines = db.readlines()
+                    entries += len(lines)
                     for i, line in enumerate(lines):
                         if query.lower() in line.lower():
                             results.append({
@@ -134,7 +136,7 @@ def search():
                                 "line": i + 1,
                                 "filename": database.name
                             })
-            return render_template("search.html", query=query, results=results, speed=time.time()-start, dbnum=len(Database.query.all()))
+            return render_template("search.html", query=query, results=results, speed=round(time.time()-start, 5), dbnum=len(Database.query.all()), entries=entries)
     
     return render_template("search.html")
 

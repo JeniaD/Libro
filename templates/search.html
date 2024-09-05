@@ -18,8 +18,8 @@
 </form>
 
 {% if query %}
-    <h3>Search for {{ query }}</h3>
-    <small>Completed in {{ speed }} through {{ dbnum }} datasets</small>
+    <h3>Search for <span class="accent">{{ query }}</span></h3>
+    <small>Completed in {{ speed }} seconds through {{ dbnum }} datasets ({{ entries }} entries)</small>
     {% endif %}
 
     {% if results %}
