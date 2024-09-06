@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+from flask import Flask, render_template, request, flash, redirect, url_for, session, send_from_directory
 from models import db, User, Database
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
@@ -18,6 +18,10 @@ def formatNumber(value):
         return f"{value / 1_000_000:.1f}M"
 
 app.jinja_env.filters["formatNumber"] = formatNumber
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, "static"), "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 @app.route("/debug")
 def debug():
