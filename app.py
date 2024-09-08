@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import time
+import concurrent.futures
 
 app = Flask(__name__)
 app.config.from_object("config")
@@ -126,6 +127,20 @@ def removeDB(id):
     flash("Removal successful", "success")
     return redirect(url_for("databases"))
 
+def searchFile(query, dbName, file):
+    results = []
+    path = os.path.join("static/uploads", str(file))
+    with open(path, 'r') as db:
+        lines = db.readlines()
+        for i, line in enumerate(lines):
+            if query.lower() in line.lower():
+                results.append({
+                    "text": line.strip(),
+                    "line": i + 1,
+                    "filename": dbName
+                })
+    return results
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if not session.get("username"):
@@ -135,22 +150,20 @@ def search():
         query = request.form.get("query").strip()
         if query:
             start = time.time()
-            results = []
-            entries = 0 # Change to in-database addition
             databases = Database.query.all()
-            for database in databases:
-                path = os.path.join("static/uploads", str(database.id))
-                with open(path, 'r') as db:
-                    lines = db.readlines()
-                    entries += len(lines)
-                    for i, line in enumerate(lines):
-                        if query.lower() in line.lower():
-                            results.append({
-                                "text": line.strip(),
-                                "line": i + 1,
-                                "filename": database.name
-                            })
-            return render_template("search.html", query=query, results=results, speed=round(time.time()-start, 5), dbnum=len(Database.query.all()), entries=entries)
+            results = []
+            maxThreads = 3
+            
+            # for database in databases:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=maxThreads) as executor:
+                futureResults = {executor.submit(searchFile, query, db.name, db.id): db for db in databases}
+                for future in concurrent.futures.as_completed(futureResults):
+                    try:
+                        results.extend(future.result())
+                    except Exception as exc:
+                        print(f"File {futureResults[future].name} generated an exception: {exc}")
+                
+            return render_template("search.html", query=query, results=results, speed=round(time.time()-start, 5), dbnum=len(Database.query.all()), entries=0)
     
     return render_template("search.html")
 
